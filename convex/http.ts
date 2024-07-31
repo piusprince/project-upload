@@ -1,5 +1,4 @@
 import { httpRouter } from "convex/server";
-
 import { internal } from "./_generated/api";
 import { httpAction } from "./_generated/server";
 
@@ -25,26 +24,51 @@ http.route({
       switch (result.type) {
         case "user.created":
           await ctx.runMutation(internal.students.createStudent, {
-            tokenIdentifier: `https://quiet-whippet-31.clerk.accounts.dev|user_2jiIRw3tCxfx5yq641gXt3GWS15${result.data.id}`,
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
+            name: `${result.data.first_name ?? ""} ${result.data.last_name ?? ""}`,
+            email: result.data.email_addresses[0]?.email_address,
+            image: result.data.image_url,
+            // department: "", // To be filled later
+            // graduationYear: null, // To be filled later
           });
           break;
+
+        case "user.updated":
+          await ctx.runMutation(internal.students.updateStudent, {
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
+            name: `${result.data.first_name ?? ""} ${result.data.last_name ?? ""}`,
+            email: result.data.email_addresses[0]?.email_address,
+            image: result.data.image_url,
+          });
+          break;
+
         case "organizationMembership.created":
           await ctx.runMutation(internal.students.addOrgIdToStudent, {
-            tokenIdentifier: `https://quiet-whippet-31.clerk.accounts.dev|user_2jiIRw3tCxfx5yq641gXt3GWS15${result.data.public_user_data}`,
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
+            role: determineStudentRole(result.data.role),
+          });
+          break;
+
+        case "organizationMembership.updated":
+          await ctx.runMutation(internal.students.updateRoleInOrgForStudent, {
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
+            orgId: result.data.organization.id,
+            role: determineStudentRole(result.data.role),
           });
           break;
       }
 
-      return new Response(null, {
-        status: 200,
-      });
+      return new Response(null, { status: 200 });
     } catch (err) {
-      return new Response("Webhook Error", {
-        status: 400,
-      });
+      console.error("Webhook Error:", err);
+      return new Response("Webhook Error", { status: 400 });
     }
   }),
 });
+
+function determineStudentRole(clerkRole: string): "admin" | "student" {
+  return clerkRole === "org:admin" ? "admin" : "student";
+}
 
 export default http;
