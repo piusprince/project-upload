@@ -21,12 +21,14 @@ http.route({
         },
       });
 
+      console.log({ result });
+
       switch (result.type) {
         case "user.created":
           await ctx.runMutation(internal.students.createStudent, {
-            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
+            tokenIdentifier: `https://quiet-whippet-31.clerk.accounts.dev|${result.data.id}`,
             name: `${result.data.first_name ?? ""} ${result.data.last_name ?? ""}`,
-            email: result.data.email_addresses[0]?.email_address,
+            // email: result.data.email_addresses[0]?.email_address,
             image: result.data.image_url,
             // department: "", // To be filled later
             // graduationYear: null, // To be filled later
@@ -35,7 +37,7 @@ http.route({
 
         case "user.updated":
           await ctx.runMutation(internal.students.updateStudent, {
-            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
+            tokenIdentifier: `https://quiet-whippet-31.clerk.accounts.dev|${result.data.id}`,
             name: `${result.data.first_name ?? ""} ${result.data.last_name ?? ""}`,
             email: result.data.email_addresses[0]?.email_address,
             image: result.data.image_url,
@@ -44,7 +46,7 @@ http.route({
 
         case "organizationMembership.created":
           await ctx.runMutation(internal.students.addOrgIdToStudent, {
-            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `https://quiet-whippet-31.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
             role: determineStudentRole(result.data.role),
           });
@@ -52,7 +54,7 @@ http.route({
 
         case "organizationMembership.updated":
           await ctx.runMutation(internal.students.updateRoleInOrgForStudent, {
-            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `https://quiet-whippet-31.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
             role: determineStudentRole(result.data.role),
           });

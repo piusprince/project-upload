@@ -26,6 +26,8 @@ export async function hasAccessToOrg(
 ) {
   const identity = await ctx.auth.getUserIdentity();
 
+  console.log({ identity });
+
   if (!identity) {
     return null;
   }
@@ -36,6 +38,8 @@ export async function hasAccessToOrg(
       q.eq("tokenIdentifier", identity.tokenIdentifier)
     )
     .first();
+
+  console.log({ student });
 
   if (!student) {
     return null;
@@ -60,6 +64,8 @@ export const createProject = mutation({
   },
   async handler(ctx, args) {
     const hasAccess = await hasAccessToOrg(ctx, args.orgId);
+
+    console.log({ hasAccess, args });
 
     if (!hasAccess) {
       throw new ConvexError("You do not have access to this organization");
