@@ -35,6 +35,8 @@ export default defineSchema({
     tags: v.optional(v.array(v.string())),
     orgId: v.string(),
     shouldDelete: v.optional(v.boolean()),
+    supervisorName: v.optional(v.string()),
+    referenceId: v.optional(v.string()),
   })
     .index("by_orgId", ["orgId"])
     .index("by_studentId", ["studentId"])
