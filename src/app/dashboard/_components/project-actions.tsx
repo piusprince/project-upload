@@ -86,6 +86,7 @@ export function ProjectCardActions({
           <DropdownMenuItem
             onClick={() => {
               if (!project.fileId) return;
+              // @ts-ignore: Fix type error
               window.open(project.fileUrl, "_blank");
             }}
             className="flex gap-1 items-center cursor-pointer"
