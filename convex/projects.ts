@@ -26,8 +26,6 @@ export async function hasAccessToOrg(
 ) {
   const identity = await ctx.auth.getUserIdentity();
 
-  console.log({ identity });
-
   if (!identity) {
     return null;
   }
@@ -38,8 +36,6 @@ export async function hasAccessToOrg(
       q.eq("tokenIdentifier", identity.tokenIdentifier)
     )
     .first();
-
-  console.log({ student });
 
   if (!student) {
     return null;
@@ -61,11 +57,14 @@ export const createProject = mutation({
     fileId: v.id("_storage"),
     orgId: v.string(),
     type: fileTypes,
+    department: v.string(),
+    supervisorName: v.optional(v.string()),
+    referenceId: v.optional(v.string()),
   },
   async handler(ctx, args) {
     const hasAccess = await hasAccessToOrg(ctx, args.orgId);
 
-    console.log({ hasAccess, args });
+    console.log({ hasAccess, args, type: args.type });
 
     if (!hasAccess) {
       throw new ConvexError("You do not have access to this organization");
@@ -80,7 +79,9 @@ export const createProject = mutation({
       studentId: hasAccess.student._id,
       status: "draft",
       submissionDate: new Date().toISOString(),
-      department: "",
+      department: args.department,
+      supervisorName: args.supervisorName,
+      referenceId: args.referenceId,
     });
   },
 });
@@ -187,6 +188,65 @@ export const deleteProject = mutation({
     assertCanModifyProject(access.student, access.project);
 
     await ctx.storage.delete(access.project.fileId);
+    await ctx.db.delete(args.projectId);
+  },
+});
+
+export const makeProjectFavorite = mutation({
+  args: { projectId: v.id("projects") },
+  async handler(ctx, args) {
+    const access = await hasAccessToProject(ctx, args.projectId);
+
+    if (!access) {
+      throw new ConvexError("No access to project");
+    }
+
+    assertCanModifyProject(access.student, access.project);
+
+    await ctx.db.insert("favorites", {
+      projectId: args.projectId,
+      userId: access.student._id,
+      orgId: access.student.orgIds[0].orgId,
+    });
+  },
+});
+
+export const getFavorites = query({
+  args: { orgId: v.string() },
+  async handler(ctx, args) {
+    const hasAccess = await hasAccessToOrg(ctx, args.orgId);
+
+    if (!hasAccess) {
+      return [];
+    }
+
+    const favorites = await ctx.db
+      .query("favorites")
+      .withIndex("by_orgId_projectId", (q) => q.eq("orgId", args.orgId))
+      .collect();
+
+    const favoritesWithProject = await Promise.all(
+      favorites.map(async (favorite) => ({
+        ...favorite,
+        project: await ctx.db.get(favorite.projectId),
+      }))
+    );
+
+    return favoritesWithProject;
+  },
+});
+
+export const deleteFavorite = mutation({
+  args: { projectId: v.id("projects") },
+  async handler(ctx, args) {
+    const access = await hasAccessToProject(ctx, args.projectId);
+
+    if (!access) {
+      throw new ConvexError("No access to project");
+    }
+
+    assertCanModifyProject(access.student, access.project);
+
     await ctx.db.delete(args.projectId);
   },
 });
