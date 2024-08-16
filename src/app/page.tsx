@@ -5,7 +5,7 @@ import { useUser } from "@clerk/nextjs";
 
 export default function LandingPage() {
   return (
-    <div className="bg-white ">
+    <div className="">
       <div className="relative  px-6 pt-14 lg:px-8">
         <div
           className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -45,7 +45,7 @@ export default function LandingPage() {
                 Submit Your Project
               </Link>
               <Link
-                href="#features"
+                href="/features"
                 className="text-sm font-semibold leading-6 text-gray-900"
               >
                 Explore Features <span aria-hidden="true">→</span>

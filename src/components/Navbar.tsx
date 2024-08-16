@@ -11,7 +11,7 @@ import Link from "next/link";
 export default function Navbar() {
   return (
     <nav className="container mx-auto flex flex-wrap items-center justify-between p-6">
-      <Link href="/">UMaT - FYP Upload</Link>
+      <Link href="/">UMaT - Final Year Project Upload</Link>
       <div>
         <OrganizationSwitcher />
         <UserButton />
