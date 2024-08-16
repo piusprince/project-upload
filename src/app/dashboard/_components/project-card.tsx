@@ -44,7 +44,7 @@ export function ProjectCard({
       pdf: input.document,
       doc: input.presentation,
       docx: input.code,
-      zip: <GanttChartIcon />, // Assuming you have a default icon for zip
+      zip: <GanttChartIcon />,
     };
   };
 
