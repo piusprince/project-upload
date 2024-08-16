@@ -9,12 +9,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatRelative } from "date-fns";
 
 import { Doc } from "../../../../convex/_generated/dataModel";
-import { FileTextIcon, GanttChartIcon, CodeIcon } from "lucide-react";
+import { FileTextIcon, GanttChartIcon, CodeIcon, FileText } from "lucide-react";
 import { ReactNode } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import Image from "next/image";
-import { ProjectCardActions } from "./project-actions"; // Renamed component
+import { ProjectCardActions } from "./project-actions";
 
 export function ProjectCard({
   project,
@@ -53,8 +53,6 @@ export function ProjectCard({
     React.ReactNode
   >;
 
-  console.log({ projectData: project });
-
   return (
     <Card>
       <CardHeader className="relative">
@@ -80,17 +78,28 @@ export function ProjectCard({
             src={project.fileUrl}
           />
         )}
+        <FileTextIcon className="w-20 h-20" />
 
         {project.type === "docx" && <GanttChartIcon className="w-20 h-20" />}
         {project.type === "doc" && <CodeIcon className="w-20 h-20" />}
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <div className="flex gap-2 text-xs text-gray-700 w-40 items-center">
-          <Avatar className="w-6 h-6">
-            <AvatarImage src={userProfile?.image} />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          {userProfile?.name}
+      <CardFooter className="flex justify-between items-start">
+        <div className="flex  flex-col gap-2 text-xs text-gray-700 w-40 ">
+          <span className="flex gap-2">
+            <Avatar className="w-6 h-6">
+              <AvatarImage src={userProfile?.image} />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col gap-1">
+              <p>{project.referenceId}</p>
+              <p>{userProfile?.name}</p>
+              {project.department && (
+                <div className="text-xs text-gray-700">
+                  {project.department}
+                </div>
+              )}
+            </div>
+          </span>
         </div>
         <div className="text-xs text-gray-700">
           Uploaded on{" "}

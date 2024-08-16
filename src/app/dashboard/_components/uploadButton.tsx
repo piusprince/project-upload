@@ -36,6 +36,9 @@ const formSchema = z.object({
   file: z
     .custom<FileList>((val) => val instanceof FileList, "Required")
     .refine((files) => files.length > 0, `Required`),
+  department: z.string().min(1).max(200),
+  supervisorName: z.string().min(1).max(200),
+  referenceId: z.string().min(1).max(200),
 });
 
 export function UploadButton() {
@@ -49,6 +52,9 @@ export function UploadButton() {
     defaultValues: {
       title: "",
       file: undefined,
+      department: "",
+      supervisorName: "",
+      referenceId: "",
     },
   });
 
@@ -79,6 +85,9 @@ export function UploadButton() {
         fileId: storageId ?? "",
         orgId: orgId ?? "",
         type: types[fileType] ?? "",
+        department: values.department ?? "",
+        supervisorName: values.supervisorName ?? "",
+        referenceId: values.referenceId ?? "",
       });
 
       form.reset();
@@ -152,6 +161,48 @@ export function UploadButton() {
                     <FormLabel>File</FormLabel>
                     <FormControl>
                       <Input type="file" {...fileRef} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="department"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Department</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="supervisorName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Supervisor</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="referenceId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reference Id</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

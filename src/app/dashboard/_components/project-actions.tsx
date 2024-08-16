@@ -40,8 +40,8 @@ export function ProjectCardActions({
   isHighlighted: boolean;
 }) {
   const deleteProject = useMutation(api.projects.deleteProject);
-  //   const restoreProject = useMutation(api.projects.restoreProject);
-  //   const toggleHighlight = useMutation(api.projects.toggleHighlight);
+  // const restoreProject = useMutation(api.projects.restoreProject);
+  const toggleHighlight = useMutation(api.projects.makeProjectFavorite);
   const { toast } = useToast();
   const me = useQuery(api.students.getMe);
 
@@ -85,7 +85,8 @@ export function ProjectCardActions({
         <DropdownMenuContent>
           <DropdownMenuItem
             onClick={() => {
-              if (!project.url) return;
+              if (!project.fileId) return;
+              // @ts-ignore: Fix type error
               window.open(project.fileUrl, "_blank");
             }}
             className="flex gap-1 items-center cursor-pointer"
@@ -94,11 +95,11 @@ export function ProjectCardActions({
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            // onClick={() => {
-            //   toggleHighlight({
-            //     projectId: project._id,
-            //   });
-            // }}
+            onClick={() => {
+              toggleHighlight({
+                projectId: project._id,
+              });
+            }}
             className="flex gap-1 items-center cursor-pointer"
           >
             {isHighlighted ? (
