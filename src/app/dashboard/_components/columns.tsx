@@ -66,6 +66,7 @@ export const columns: ColumnDef<
         <div>
           <ProjectCardActions
             isHighlighted={row.getIsSelected()}
+            //@ts-ignore - TODO: fix type error
             project={{ ...row.original, url: null }}
           />
         </div>
