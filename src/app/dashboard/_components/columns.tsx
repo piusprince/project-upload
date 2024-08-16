@@ -42,6 +42,10 @@ export const columns: ColumnDef<
     },
   },
   {
+    accessorKey: "department",
+    header: "Department",
+  },
+  {
     header: "Submitted On",
     cell: ({ row }) => {
       return (
