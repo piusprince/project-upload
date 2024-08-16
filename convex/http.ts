@@ -21,8 +21,6 @@ http.route({
         },
       });
 
-      console.log({ result });
-
       switch (result.type) {
         case "user.created":
           await ctx.runMutation(internal.students.createStudent, {
