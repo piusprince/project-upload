@@ -127,3 +127,11 @@ export const getMe = query({
     return student;
   },
 });
+
+export const getStudents = query({
+  args: {},
+  async handler(ctx) {
+    const students = await ctx.db.query("students").collect();
+    return students;
+  },
+});
